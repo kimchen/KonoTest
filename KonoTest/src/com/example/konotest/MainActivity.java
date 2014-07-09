@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.LruCache;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -40,7 +41,7 @@ public class MainActivity extends Activity {
 	private ProgressDialog dialog = null;
 	private Button startBtn = null;
 	private ListView lv = null;
-	
+	private LruCache<String, Bitmap> imgCache = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,7 +56,13 @@ public class MainActivity extends Activity {
 				startGetInfo();
 			}
 		});
-		
+		long maxMemory = Runtime.getRuntime().maxMemory();
+		imgCache = new LruCache<String, Bitmap>((int)maxMemory/8){
+			@Override
+			protected int sizeOf(String key, Bitmap bmp) {
+				return bmp.getByteCount();
+			};
+		};
 	}
 	private void startGetInfo(){
 		DownloadInfoTask dit = new DownloadInfoTask();
@@ -104,13 +111,17 @@ public class MainActivity extends Activity {
 				
 				for(MagazineInfo mgz : mgzList)
 				{
-					String imgUrl = getImageURL(mgz.bid);
-					get = new HttpGet(imgUrl);
-					res = hc.execute(get);
-					InputStream is = res.getEntity().getContent();
-					Bitmap bmp = BitmapFactory.decodeStream(is,null,bmpOpts);
+					Bitmap bmp = imgCache.get(mgz.bid);
+					if(bmp == null){
+						String imgUrl = getImageURL(mgz.bid);
+						get = new HttpGet(imgUrl);
+						res = hc.execute(get);
+						InputStream is = res.getEntity().getContent();
+						bmp = BitmapFactory.decodeStream(is,null,bmpOpts);	
+						imgCache.put(mgz.bid, bmp);
+						is.close();
+					}
 					mgz.img = bmp;
-					is.close();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
