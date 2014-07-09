@@ -40,8 +40,7 @@ public class MagazineAdapter extends BaseAdapter{
 		LayoutComponent lc = null;
 		if(convertView == null){
 			convertView = mInflater.inflate(R.layout.konolist, null);
-			lc = new LayoutComponent((TextView)convertView.findViewById(R.id.listtitle), 
-					(TextView)convertView.findViewById(R.id.listdes), 
+			lc = new LayoutComponent((TextView)convertView.findViewById(R.id.listdes), 
 					(ImageView)convertView.findViewById(R.id.listimage));
 			convertView.setTag(lc);
 		}else{
@@ -57,13 +56,11 @@ public class MagazineAdapter extends BaseAdapter{
 	}
 	
 	class LayoutComponent{
-		public TextView title = null;
 		public TextView des = null;
 		public ImageView img = null;
-		public LayoutComponent(TextView v1,TextView v2,ImageView v3){
-			this.title = v1;
-			this.des = v2;
-			this.img = v3;
+		public LayoutComponent(TextView v1,ImageView v2){
+			this.des = v1;
+			this.img = v2;
 		}
 	}
 	

@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
 				BitmapFactory.Options bmpOpts = new BitmapFactory.Options();
 				bmpOpts.inPurgeable = true;
 				bmpOpts.inInputShareable = true;
-				bmpOpts.inSampleSize = 8;
+				bmpOpts.inSampleSize = 4;
 				
 				for(MagazineInfo mgz : mgzList)
 				{
